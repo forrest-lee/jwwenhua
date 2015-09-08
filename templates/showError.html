@@ -1,0 +1,17 @@
+<!Doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Error Info</title>
+</head>
+<body>
+	<h1>Leo's Blog</h1>
+
+	{% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  
+	<h2>Errors</h2>
+	<p>{{ errorInfos }}</p>
+
+	</body>
+</html>

@@ -1,0 +1,23 @@
+{% extends "basic_layout.html" %} {% block body %}
+<div class='contentBox'>
+    <img src="{{user_imag_url}}" alt="userPhoto">
+    <h2>{{name}}</h2>
+    <p>其他功能还在开发中...</p>
+    <table class="articleListTable">
+    <tbody>
+    <tr>
+		<th>学年</th> <th>学期</th> <th>课程名称</th> <th>成绩</th>
+	</tr>
+    {% for i in cont %}
+    <tr>
+        <td>{{i['xn']}}</td>
+        <td>{{i['xq']}}</td>
+        <td>{{i['kcmc']}}</td>
+        <td>{{i['cj']}}</td>
+        <td>{{i['bkcj']}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+name: xunli
+version: 11
+
+
+libraries:
+- name: flask
+  version: "0.10"
+ 
+- name: lxml
+  version: "2.3.4"

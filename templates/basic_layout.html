@@ -1,0 +1,42 @@
+<!Doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>模拟登陆教务系统</title>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="flaskr">
+    <div class="page">
+        <h1>华中科技大学文华学院教务查询系统</h1>
+        <div class=metanav>
+            <ul class="navbar">
+                <li><a href="{{ url_for('jwLogin') }}">首页</a> / </li>
+                <li><a href="#">查成绩</a> / </li>
+                <li><a href="#">查课表</a> / </li>
+                <li><a href="#">关于本系统</a></li>
+            </ul>
+            {% if not session.logged_in %}
+            <a href="{{ url_for('jwLogin') }}">登陆</a> 
+            {% else %}
+            <a href="{{ url_for('jwLogout') }}">登出</a> 
+            {% endif %}
+        </div>
+        {% for message in get_flashed_messages() %}
+        <div class=flash>{{ message }}</div>
+        {% endfor %} 
+
+        {% if error %}
+        <p class=error><strong>Error:</strong> 
+        {{ error }}
+        {% endif %} 
+        {% block body %}{% endblock %}
+            <p class="footer">
+                本系统由Leo基于<a href="http://flask.pocoo.org/">Flask</a>框架开发 © Copyright 2015 by Leo
+            </p>
+    </div>
+</body>
+
+</html>
