@@ -14,8 +14,8 @@
         <div class=metanav>
             <ul class="navbar">
                 <li><a href="{{ url_for('jwLogin') }}">首页</a> / </li>
-                <li><a href="#">查成绩</a> / </li>
-                <li><a href="#">查课表</a> / </li>
+                <li><a href="{{ url_for('jwGrades') }}">查成绩</a> / </li>
+                <li><a href="{{ url_for('jwTimetable')}}">查课表</a> / </li>
                 <li><a href="#">关于本系统</a></li>
             </ul>
             {% if not session.logged_in %}

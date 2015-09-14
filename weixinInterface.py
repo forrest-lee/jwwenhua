@@ -133,12 +133,10 @@ def teardown_request(exception):
 def mainPage():
     return render_template('index.html')
 
-'''
+
 @app.route('/jw',methods=['GET','POST'])
 def jwMain():
-    if 'logged_in' not in session:
-        return redirect(url_for('jwLogin'))
-'''
+    return redirect(url_for('jwLogin'))
 
 
 @app.route('/jw/login',methods=['GET','POST'])
@@ -206,7 +204,10 @@ def jwLogin():
             error = "用户名或密码或验证码错误"
             return render_template('jwLoginPage.html', chk_imag_url=chk_imag_url, error=error)
             nameStr = u"姓名空"
+        
         name = nameStr.replace(u'同学','')
+        session['logged_in'] = username
+        session['name'] = name
         flash(u"欢迎你，" + name + u"同学！")
         
         photoUrl = 'http://jw2.hustwenhua.net/(' + fStr +')/readimagexs.aspx?xh=' + username
@@ -230,8 +231,7 @@ def jwLogin():
         '''
 
         # 历年成绩抓取
-        grade_url = 'http://jw2.hustwenhua.net/(' + fStr +')/xscjcx.aspx?xh=' 
-            + username + '&xm=' + name + '&gnmkdm=N121613'
+        grade_url = 'http://jw2.hustwenhua.net/(' + fStr +')/xscjcx.aspx?xh=' + username + '&xm=' + name + '&gnmkdm=N121613'
         grade_req = urllib2.Request(grade_url);
         grade_req.add_header("Referer", mainpage_url)
         grade_response = opener.open(grade_req).read().decode('gbk','ignore')
@@ -240,6 +240,7 @@ def jwLogin():
         # 解决方案就是改用 .decode('gbk')来解码
         # grade_response = opener.open(grade_req).read()
         # htmlText = BeautifulSoup(grade_response, from_encoding='gb2312')
+
         viewstate = re.findall('<input[^>]*name=\"__VIEWSTATE\"[^>]*value=\"([^"]*)\"[^>]*>', 
             str(htmlText), 
             re.IGNORECASE);
@@ -263,6 +264,87 @@ def jwLogin():
            
         return render_template('jwMainPage.html', user_imag_url=photoUrl, name=name, cont=parsedTable)
     
+
+@app.route('/jw/grades')
+def jwGrades():
+    if 'logged_in' not in session:
+        return redirect(url_for('jwLogin'))
+    error = ""
+    fStr = session['fStr']
+    username = session['logged_in']
+    name = session['name']
+    photoUrl = 'http://jw2.hustwenhua.net/(' + fStr +')/readimagexs.aspx?xh=' + username
+
+    baseurl = 'http://jw2.hustwenhua.net/(' + fStr + ')/xs_main.aspx?'
+    mainpage_url = baseurl + 'xh=' + username
+
+    # 设置cookie自动管理
+    cj = cookielib.CookieJar()
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj)) # Login
+    urllib2.install_opener(opener) 
+
+    # 历年成绩抓取
+    grade_url = 'http://jw2.hustwenhua.net/(' + fStr +')/xscjcx.aspx?xh=' + username + '&xm=' + name + '&gnmkdm=N121613'
+    grade_req = urllib2.Request(grade_url);
+    grade_req.add_header("Referer", mainpage_url)
+    grade_response = opener.open(grade_req).read().decode('gbk','ignore')
+    htmlText = BeautifulSoup(grade_response)
+    # 用BeautifulSoup解码，在SAE上运行时会出现获取到的body标签内容为空的奇怪bug
+    # 解决方案就是改用 .decode('gbk')来解码
+    # grade_response = opener.open(grade_req).read()
+    # htmlText = BeautifulSoup(grade_response, from_encoding='gb2312')
+
+    viewstate = re.findall('<input[^>]*name=\"__VIEWSTATE\"[^>]*value=\"([^"]*)\"[^>]*>', 
+        str(htmlText), 
+        re.IGNORECASE);
+
+    postData = {
+        '__EVENTTARGET': '',
+        '__EVENTARGUMENT': '',
+        '__VIEWSTATE': viewstate[0],
+        'hidLanguage': '',
+        'ddlXN': '',
+        'ddlXQ': '',
+        'ddl_kcxz': '',
+        'btn_zcj': '%C0%FA%C4%EA%B3%C9%BC%A8'
+    }
+    grade_req = urllib2.Request(grade_url, urllib.urlencode(postData));
+    grade_req.add_header("Referer", grade_url)
+    grade_req.add_header('User-Agent', "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36");  
+    grade_response = opener.open(grade_req).read().decode('gbk','ignore')
+    contHtml = BeautifulSoup(grade_response).find_all('table')
+    parsedTable = parseGradeTable(str(contHtml))
+       
+    return render_template('jwMainPage.html', user_imag_url=photoUrl, name=name, cont=parsedTable)
+
+
+@app.route('/jw/timetable')
+def jwTimetable():
+    if 'logged_in' not in session:
+        return redirect(url_for('jwLogin'))
+
+    error = ""
+    fStr = session['fStr']
+    username = session['logged_in']
+    name = session['name']
+
+    baseurl = 'http://jw2.hustwenhua.net/(' + fStr + ')/xs_main.aspx?'
+    mainpage_url = baseurl + 'xh=' + username
+
+    # 设置cookie自动管理
+    cj = cookielib.CookieJar()
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj)) # Login
+    urllib2.install_opener(opener) 
+
+    # 抓取课表信息
+    contUrl = 'http://jw2.hustwenhua.net/(' + fStr +')/xskbcx.aspx?xh=' + username + '&xm=' + name + '&gnmkdm=N121602'
+    conReq = urllib2.Request(contUrl)
+    conReq.add_header("Referer",mainpage_url)
+    contHtml = opener.open(conReq).read().decode('gbk', 'ignore')
+
+    return render_template('jwTimetable.html', timetable=contHtml)
+
+
 
 @app.route('/jw/logout')
 def jwLogout():
@@ -358,4 +440,7 @@ def wechat_auth():
     
         return response
 
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
