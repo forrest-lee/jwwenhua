@@ -263,6 +263,7 @@ def jwLogin():
         parsedTable = parseGradeTable(str(contHtml))
            
         return render_template('jwMainPage.html', user_imag_url=photoUrl, name=name, cont=parsedTable)
+
     
 
 @app.route('/jw/grades')
@@ -341,8 +342,12 @@ def jwTimetable():
     conReq = urllib2.Request(contUrl)
     conReq.add_header("Referer",mainpage_url)
     contHtml = opener.open(conReq).read().decode('gbk', 'ignore')
+    soup = BeautifulSoup(contHtml).find_all('table')
+    tag = soup[1]
+    tag['class'] = 'greytable'
+    tag['border'] = 1;
 
-    return render_template('jwTimetable.html', timetable=contHtml)
+    return render_template('jwTimetable.html', timetable=tag)
 
 
 

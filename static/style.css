@@ -1,3 +1,15 @@
+table {
+    display: table;
+    border-collapse = collapse;
+    border-color: grey;
+    border-spacing: 0px;
+    -webkit-border-horizontal-spacing: 0px;
+    -webkit-border-vertical-spacing: 0px;
+    margin-top: 5px;
+    
+}
+
+
 .flaskr {
     font: 100%;
     font-family: sans-serif;
