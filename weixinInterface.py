@@ -32,7 +32,7 @@ sys.setdefaultencoding('utf-8')
 # configuration
 MYSQL_DB = 'flaskr'
 DEBUG = True
-SECRET_KEY = 'zzhilw32ij5ww44h22mjyk0mkzhzz3jylm2kzwxw'
+SECRET_KEY = ''
 MYSQL_USER = 'root'
 MYSQL_PASS = ''
 MYSQL_HOST = '127.0.0.1'
@@ -45,7 +45,7 @@ try:
     from sae.mail import EmailMessage
     MYSQL_DB = sae.const.MYSQL_DB
     # DEBUG = False
-    SECRET_KEY = 'zzhilw32ij5ww44h22mjyk0mkzhzz3jylm2kzwxw'
+    SECRET_KEY = ''
     MYSQL_USER = sae.const.MYSQL_USER
     MYSQL_PASS = sae.const.MYSQL_PASS
     MYSQL_HOST = sae.const.MYSQL_HOST
